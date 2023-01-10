@@ -1,0 +1,4 @@
+
+
+class Auth:
+    pass

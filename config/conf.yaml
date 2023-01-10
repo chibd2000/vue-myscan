@@ -1,0 +1,25 @@
+# coding=utf-8
+
+xray: 'close'
+celery:
+    schedule: 3600 #
+github:
+    api: ''
+db:
+    addr: 'myscan_mysql'
+    port: 3306
+    user: 'root'
+    pass: 'root'
+    db: 'myscan'
+mail:
+    qq:
+        # qq邮箱
+        key: ''
+        receiver: '' # 接收者 若多个接收者可以通过逗号进行分隔 a@qq.com,b@qq.com
+        sender: '横戈安全团队' # 发送者
+    weixin:
+        # https://blog.csdn.net/qq_43094563/article/details/113620374
+        app_id: '' # app_id
+        app_secret: '' # app_secret
+        user_id: '' # 用户id
+        template_id: '' # 模版id

@@ -1,0 +1,58 @@
+version: '3.7'
+
+volumes:
+  myscan_db:
+    external: true
+
+services:
+  web:
+    image: zpchcbd/myscan_web:v3
+    container_name: myscan_web
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 7878:80
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./:/app/
+    working_dir: /app/
+    entrypoint: ["./run_web.sh"]
+    environment:
+      - LANG=en_US.UTF-8
+      - TZ=Asia/Shanghai
+
+  celery:
+    image: zpchcbd/myscan_web:v3
+    container_name: myscan_celery
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./:/app/
+    working_dir: /app/
+    entrypoint: ["./run_celery.sh"]
+    environment:
+      - LANG=en_US.UTF-8
+      - TZ=Asia/Shanghai
+
+  redis:
+    image: redis:6.2.7
+    container_name: myscan_redis
+    restart: always
+    environment:
+      - LANG=en_US.UTF-8
+      - TZ=Asia/Shanghai
+
+  mysql:
+    image: mysql:5.7.40
+    container_name: myscan_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: myscan
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - myscan_db:/var/lib/mysql
