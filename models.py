@@ -623,6 +623,7 @@ class GithubTask(db.Model):
     def add_task(github_task):
         db.session.add(github_task)
         db.session.commit()
+        return True
 
     @staticmethod
     def delete_task_by_mointorid(monitor_id):
