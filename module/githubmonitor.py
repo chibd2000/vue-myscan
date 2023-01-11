@@ -331,7 +331,7 @@ class GithubCommitMonitor(GithubMonitor):
         except Exception as e:
             print(e.__str__())
         finally:
-            self.db_conn.update_next_update_time(int(time.time()) + 60, monitor_id)
+            self.db_conn.update_next_update_time(int(time.time()) + get_celery_conf()['schedule'], monitor_id)
             return commit_list
 
     async def monitor(self, monitor_id):
