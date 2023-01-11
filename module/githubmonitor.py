@@ -55,8 +55,7 @@ class GithubMonitor:
         self.db_conn = GithubDB(db_conf)
 
     def time_format(self):
-        return time.strftime("%Y-%m-%d", time.localtime(1671000000))
-        # return time.strftime("%Y-%m-%d", time.localtime(int(time.time())))
+        return time.strftime("%Y-%m-%d", time.localtime(int(time.time())-86400))
 
     async def get_fetch_json(self, session, url, headers=None):
         response = await AsyncFetcher.fetch_response(session=session, url=url, json=True, headers=headers)
@@ -159,7 +158,10 @@ class GithubKeywordMatcher:
 
 
 class GithubBuiler:
-    pass
+    def _date_format(self, date):
+        return int(time.mktime(time.strptime(datetime.datetime.strftime(
+            datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z") + datetime.timedelta(hours=8), "%Y-%m-%d %H:%M:%S"),
+                                             "%Y-%m-%d %H:%M:%S")))
 
 
 class GithubCommitBuiler(GithubBuiler):
@@ -169,11 +171,6 @@ class GithubCommitBuiler(GithubBuiler):
         super(GithubCommitBuiler, self).__init__()
         self.github_commit = GithubCommit(monitor_id, commit_sha)
         self.keyword_matcher = GithubKeywordMatcher()
-
-    def _date_format(self, date):
-        return int(time.mktime(time.strptime(datetime.datetime.strftime(
-            datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z") + datetime.timedelta(hours=8), "%Y-%m-%d %H:%M:%S"),
-                                             "%Y-%m-%d %H:%M:%S")))
 
     def build_branch(self, branch_json):
         if len(branch_json) > 0:
@@ -240,11 +237,6 @@ class GithubIssueBuiler(GithubBuiler):
         self.github_issue = GithubIssue(monitor_id, issue_id)
         self.keyword_matcher = GithubKeywordMatcher()
 
-    def _date_format(self, date):
-        return int(time.mktime(time.strptime(datetime.datetime.strftime(
-            datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z") + datetime.timedelta(hours=8), "%Y-%m-%d %H:%M:%S"),
-                                             "%Y-%m-%d %H:%M:%S")))
-
     def build_level(self):
         self.github_issue.issue_level = self.keyword_matcher.check_keyword(self.github_issue.issue_body) or self.keyword_matcher.check_keyword(self.github_issue.issue_title)
 
@@ -298,7 +290,7 @@ class GithubIssueBuiler(GithubBuiler):
 class GithubCommitMonitor(GithubMonitor):
     def __init__(self):
         super(GithubCommitMonitor, self).__init__()
-        self.commit_query = 'committer-date:>{}+repo:{}'
+        self.commit_query = 'committer-date:>={}+repo:{}'
 
     def check_repeat(self, exists_commit_result, current_sha):
         return not any(commit['commit_sha'] == current_sha for commit in exists_commit_result)
@@ -356,7 +348,7 @@ class GithubCommitMonitor(GithubMonitor):
 class GithubIssuePrMonitor(GithubMonitor):
     def __init__(self):
         super(GithubIssuePrMonitor, self).__init__()
-        self.issue_query = 'created:>{}+repo:{}'
+        self.issue_query = 'created:>={}+repo:{}'
 
     def check_repeat(self, exists_issue_result, current_id):
         return not any(issue['issue_id'] == current_id for issue in exists_issue_result)

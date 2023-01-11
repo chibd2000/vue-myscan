@@ -33,7 +33,7 @@ class DetailCommit(MyscanResource):
                      'commit_committer_name': commit.commit_committer_name,
                      'commit_committer_date': commit.commit_committer_date, 'commit_branch': commit.commit_branch,
                      'commit_level': commit.commit_level} for commit in detail_commit_data]
-            return {'status': True, 'total': total, 'issues': data, 'page_num': 1}
+            return {'status': True, 'total': total, 'commits': data, 'page_num': 1}
 
     @jwt_required()
     def post(self):
