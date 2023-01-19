@@ -4,7 +4,7 @@
 # @Time     : 2021-11-26 18:48
 
 """如果之后继续进行数据库整理的话，再把这个写上 created in 2021.11.26 18.54 @zpchcbd"""
-from core.data import gLogger
+from module.data import gLogger
 import pymysql.cursors
 
 
@@ -52,12 +52,12 @@ class Database:
                 sql_top += key + ','
                 sql_tail += '"' + val + '"' + ',' if type(val) == str and val != 'NULL' else str(val) + ','
             sql = sql_top[:-1] + sql_tail[:-1] + ')'
-            print(sql)
             with self.__conn.cursor() as cursor:
                 cursor.execute(sql)
             self.__conn.commit()
             return self.__conn.insert_id()
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             self.__conn.rollback()
             return False
 
@@ -69,12 +69,12 @@ class Database:
                 sql += key + '=' + '"' + val + '"' + ',' if type(val) == str and val != 'NULL' else key + '=' + str(
                     val) + ','
             sql = sql[:-1] + ' WHERE ' + range_str
-            # print(sql)
             with self.__conn.cursor() as cursor:
                 cursor.execute(sql)
             self.__conn.commit()
             return cursor.rowcount
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             self.__conn.rollback()
             return False
 
@@ -87,6 +87,7 @@ class Database:
             self.__conn.commit()
             return cursor.rowcount
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             self.__conn.rollback()
             return False
 
@@ -100,6 +101,7 @@ class Database:
             self.__conn.commit()
             return cursor.fetchall()[0]
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             return False
 
     # 查询多条数据在数据表中
@@ -112,6 +114,7 @@ class Database:
             self.__conn.commit()
             return cursor.fetchall()
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             return False
 
     # 统计某表某条件下的总行数
@@ -123,6 +126,7 @@ class Database:
             self.__conn.commit()
             return cursor.fetchall()[0]['res']
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             return False
 
     # 统计某字段（或字段计算公式）的合计值
@@ -134,6 +138,7 @@ class Database:
             self.__conn.commit()
             return cursor.fetchall()[0]['res']
         except pymysql.Error as e:
+            gLogger.myscan_error(e.__str__())
             return False
 
     # 销毁对象时关闭数据库连接
@@ -141,7 +146,7 @@ class Database:
         try:
             self.__conn.close()
         except pymysql.Error as e:
-            pass
+            gLogger.myscan_error(e.__str__())
 
     # 关闭数据库连接
     def close(self):

@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from module.asynchttp import AsyncFetcher
 from module.database import Database
 from utils.conf_reader import get_database_conf, get_qq_mail_conf, get_weixin_mail_conf
+from module.data import gLogger
 
 import json
 import smtplib
@@ -46,7 +47,7 @@ async def send_weixin_mail(content):
                                                   data=json.dumps(body, ensure_ascii=False).encode('utf-8'),
                                                   headers=headers, json=True)
     except Exception as e:
-        print('[-] send_weixin_mail error...')
+        gLogger.myscan_error(e.__str__())
 
 
 def send_qq_mail(content):
@@ -66,4 +67,4 @@ def send_qq_mail(content):
         server.sendmail(from_addr, to_addrs, msg.as_string())
         server.quit()
     except Exception as e:
-        print('[-] send_qq_mail error...')
+        gLogger.myscan_error(e.__str__())
