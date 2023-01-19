@@ -1,6 +1,7 @@
 import datetime
 import random
-
+from module.data import gLogger
+from pymysql.converters import escape_string
 from module.asynchttp import AsyncFetcher
 from module.attributedict import AttributeDict
 from module.database import GithubDB
@@ -80,10 +81,10 @@ class GithubMonitor:
                 elif response.status == 401:
                     raise GithubTokenError('token error') from None
         except GithubTokenError as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
             return False, None
         except Exception as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
             return False, None
 
 
@@ -185,7 +186,7 @@ class GithubCommitBuiler(GithubBuiler):
 
     def build_commit(self, ret_json: dict):
         self.github_commit.commit_url = ret_json['html_url']
-        self.github_commit.commit_message = ret_json['commit']['message']
+        self.github_commit.commit_message = escape_string(ret_json['commit']['message'])
         self.github_commit.commit_author_name = ret_json['commit']['author']['name']
         self.github_commit.commit_author_date = self._date_format(ret_json['commit']['author']['date'])
         self.github_commit.commit_committer_name = ret_json['commit']['committer']['name']
@@ -256,8 +257,8 @@ class GithubIssueBuiler(GithubBuiler):
                 'issue_create_date': self.github_issue.issue_create_date,
                 'issue_status': self.github_issue.issue_status,
                 'issue_level': self.github_issue.issue_level,
-                'issue_title': self.github_issue.issue_title,
-                'issue_body': self.github_issue.issue_body[:20] if len(self.github_issue.issue_body) > 20 else self.github_issue.issue_body,
+                'issue_title': escape_string(self.github_issue.issue_title),
+                'issue_body': escape_string(self.github_issue.issue_body[:20]) if len(self.github_issue.issue_body) > 20 else escape_string(self.github_issue.issue_body),
                 'type': self.github_issue.type,
                 'is_visited': 0}
 
@@ -325,11 +326,11 @@ class GithubCommitMonitor(GithubMonitor):
                                 current_request_count += 1
                                 commit_list.append(gmb.build_mail_content(target))
         except GithubGrammarError as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
         except GithubLimitError as e:
-            print(e.__str__())
+            pgLogger.myscan_error(e.__str__())
         except Exception as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
         finally:
             self.db_conn.update_next_update_time(int(time.time()) + get_celery_conf()['schedule'], monitor_id)
             return commit_list
@@ -380,11 +381,11 @@ class GithubIssuePrMonitor(GithubMonitor):
                                 current_request_count += 1
                                 issue_list.append(gib.build_mail_content(target))
         except GithubGrammarError as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
         except GithubLimitError as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
         except Exception as e:
-            print(e.__str__())
+            gLogger.myscan_error(e.__str__())
         finally:
             self.db_conn.update_next_update_time(int(time.time()) + get_celery_conf()['schedule'], monitor_id)
             return issue_list
