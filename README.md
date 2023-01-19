@@ -1,8 +1,6 @@
 
 # 环境搭建
 
-默认账号密码 admin / admin
-
 ```
 docker volume create --name=myscan_db
 docker-compose up -d
@@ -19,7 +17,7 @@ export PATH=$PATH:/usr/local/python3/bin
 flask create
 ```
 
-##注意事项
+## 注意事项
 
 - 如果想要支持ksubdomain信息搜集，请在vue-myscan的目录下运行如下命令
 
@@ -35,6 +33,8 @@ rm KSubdomain-v1.9.5-linux.tar
 
 ![img.png](img/14.png)
 
+- 默认账号密码 admin / admin
+
 ## 配置文件
 
 - config/conf.yaml
@@ -45,11 +45,11 @@ rm KSubdomain-v1.9.5-linux.tar
 
 ![img.png](img/2.png)
 
-登陆口
+登陆界面
 
 ![img.png](img/13.png)
 
-页面布局如下所示
+页面布局
 
 ![img.png](img/9.png)
 
