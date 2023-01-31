@@ -99,7 +99,7 @@ class Database:
             with self.__conn.cursor() as cursor:
                 cursor.execute(sql)
             self.__conn.commit()
-            return cursor.fetchall()[0]
+            return cursor.fetchall()
         except pymysql.Error as e:
             gLogger.myscan_error(e.__str__())
             return False

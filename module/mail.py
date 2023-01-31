@@ -12,10 +12,16 @@ import aiohttp
 
 
 def get_mail_type():
-    db_conf = get_database_conf()
-    db_conn = Database(db_conf)
-    t = db_conn.select_one('mail_config', '1')
-    return t['wake_type']
+    try:
+        db_conf = get_database_conf()
+        db_conn = Database(db_conf)
+        t = db_conn.select_one('mail_config', '1')[0]
+        if t and t['is_show'] and t['wake_type']:
+            return t['wake_type']
+        else:
+            return ''
+    except:
+        return ''
 
 
 async def send_weixin_mail(content):

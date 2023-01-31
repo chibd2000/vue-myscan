@@ -20,8 +20,12 @@ class Settings(MyscanResource):
     @jwt_required()
     @marshal_with(resource_fields)
     def get(self):
-        setting = MailConfig.query.first()
-        data = {'wake_type': setting.wake_type, 'is_show': setting.is_show}
+        count = MailConfig.query.count()
+        if count == 1:
+            setting = MailConfig.query.first()
+            data = {'wake_type': setting.wake_type, 'is_show': setting.is_show}
+        elif count == 0:
+            data = {'wake_type': '', 'is_show': 0}
         return {'status': True, 'settings': data}
 
     @jwt_required()
