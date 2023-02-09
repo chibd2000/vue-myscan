@@ -328,7 +328,7 @@ class GithubCommitMonitor(GithubMonitor):
         except GithubGrammarError as e:
             gLogger.myscan_error(e.__str__())
         except GithubLimitError as e:
-            pgLogger.myscan_error(e.__str__())
+            gLogger.myscan_error(e.__str__())
         except Exception as e:
             gLogger.myscan_error(e.__str__())
         finally:

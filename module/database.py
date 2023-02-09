@@ -172,7 +172,7 @@ class GithubDB(Database):
 
     def get_monitor_task_by_monitorid(self, monitor_id=None):
         if monitor_id:
-            return self.select_one('github_task', f'monitor_id="{monitor_id}"')
+            return self.select_one('github_task', f'monitor_id="{monitor_id}"')[0]
         else:
             return self.select_more('github_task', '1')
 
